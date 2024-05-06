@@ -5,6 +5,6 @@ export const enum AuthRouteNames {
 
 
 export const enum HomepageRouteNames {
-    HOMEPAGE = 'HOMEPAGE',
-    PROFILE = 'PROFILE'
+    HOMEPAGE = 'Homepage',
+    PROFILE = 'Profile'
 }

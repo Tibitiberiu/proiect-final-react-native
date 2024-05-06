@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 const HomepageTab = createBottomTabNavigator();
 
 const homepageRoutes = (
-    <HomepageTab.Navigator initialRouteName='Homepage'>
+    <HomepageTab.Navigator initialRouteName='Profile'>
         <HomepageTab.Screen name={HomepageRouteNames.HOMEPAGE} component={HomepageScreen} options={{
             tabBarIcon: ({ color, size }) => (
             <Icon name="home" size={size} color={color} />

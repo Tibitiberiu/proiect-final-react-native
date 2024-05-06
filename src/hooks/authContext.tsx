@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getUserInfo, login, register } from "../api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthRouteNames } from "../router/route-names";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 
 interface IUserDetails {
     user: {id: string, email: string};
@@ -14,10 +16,10 @@ interface IAuthContext {
     token: string;
     user_details: IUserDetails;
     login: (email: string, password: string) => Promise<void>;
-    register: (email: string, password: string) => Promise<void>;
+    register: (email: string, password: string, navigation: NavigationProp<any>) => Promise<void>;
     logout: () => Promise<void>;
     isLoading: boolean,
-    error: {type: string, message: string},
+    error: {type: string, message: string, success: boolean},
 }
 
 const AuthContext = createContext<IAuthContext>({
@@ -36,14 +38,14 @@ const AuthContext = createContext<IAuthContext>({
     register: async () => {},
     logout: async () => {},
     isLoading: false,
-    error: {type: "", message: ""},
+    error: {type: "", message: "", success: false},
 })
 
 export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
 
     const [token, setToken] = useState<string>('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<{type: string, message: string}>({type: '', message: ''});
+    const [error, setError] = useState<{type: string, message: string, success: boolean}>({type: '', message: '', success: false});
     const [user_details, setUserDetails] = useState<IUserDetails>({user: {
                                                                         id: '', 
                                                                         email: '',
@@ -80,26 +82,22 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
                     setUserDetails(result2);
                     await AsyncStorage.setItem('userDetails', JSON.stringify(result2));
                 }
+                setError({type: '', message: '', success: false});
             } else {
-                setError({type: "login", message: "Wrong email / password!"});
+                setError({type: "login", message: "Wrong email / password!", success: false});
             }
         } catch (error) {
             console.log(error)
         }
     };
-    const handleRegister = async (email: string, password: string) => {
+    const handleRegister = async (email: string, password: string, navigation: NavigationProp<any>) => {
         try {
             const result = await register(email, password);
             if(result) { 
-                setToken(result);
-                await AsyncStorage.setItem('token', result);
-                const result2 = await getUserInfo(result);
-                if(result2) { 
-                    setUserDetails(result2);
-                    await AsyncStorage.setItem('userDetails', JSON.stringify(result2));
-                }
+                setError({type: "login", message: "Registered successfully! You can login with your account now.", success: true});
+                navigation.goBack();
             } else {
-                setError({type: "register", message: "Wrong email!"});
+                setError({type: "register", message: "Wrong email!", success: false});
             }
         } catch (error) {
             console.log(error)
@@ -118,6 +116,7 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
                     gamesWon: -1,
                     currentlyGamesPlaying: -1,
                 });
+        setError({type: 'login', message: 'Log out successfully!', success: true});
     };
     return (
         <AuthContext.Provider value={{

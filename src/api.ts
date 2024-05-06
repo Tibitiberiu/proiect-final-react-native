@@ -32,7 +32,7 @@ export const register = async (email: string, password: string) => {
     })
     const data = await result.json()
     console.log(data);
-    return data.accessToken
+    return data.id
 };
 
 export const getUserInfo = async (token: string) => {
