@@ -1,7 +1,11 @@
 import 'react-native-gesture-handler';
-import {Text} from "react-native";
+import Router from './src/router';
+import { AuthContextProvider } from './src/hooks/authContext';
+
 export default function App() {
-  return (
-    <Text>Test</Text>
+  return ( 
+    <AuthContextProvider>
+      <Router/>
+    </AuthContextProvider>      
   );
 }
