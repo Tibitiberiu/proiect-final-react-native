@@ -65,15 +65,14 @@ const AlertText = styled.Text`
 `;
 
 export interface ILogin {
-    onSubmit: (email: string, password: string) => void;
     goToRegister: () => void;
 }
 
-const Login: React.FC<ILogin> = ({onSubmit, goToRegister}) => {
+const Login: React.FC<ILogin> = ({goToRegister}) => {
     const auth = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const handleSubmit = () => onSubmit(email, password)
+    const handleSubmit = () => auth.login(email, password)
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>

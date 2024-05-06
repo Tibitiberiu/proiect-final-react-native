@@ -13,24 +13,19 @@ const Container = styled.View`
     border: 1px solid grey;
     border-radius: 20px;
 `
-
+const TextContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+`
 const ButtonContainer = styled.View`
     align-items: center;
     gap: 10px;
-    paddingTop: 30px;
-`
-
-const Input = styled.TextInput`
-    height: 50px;
-    padding-horizontal: 20px;
-    border-color: red;
-    border-width: 1px;
-    border-radius: 7px;
-    background-color: white;
+    paddingTop: 10px;
 `
 
 const Button = styled.Pressable`
-    background-color: #007260;
+    background-color: #c53030;
     height: 45px;
     width: 200px;
     border-color: gray;
@@ -51,52 +46,63 @@ const Title = styled.Text`
     font-size: 30px;
     paddingBottom: 10px;
 `
-const AlertContainer = styled.View`
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0 10px 0;
-  background-color: #fed7d7;
-`;
+const TextTitle = styled.Text`
+    font-weight: bold;
+`
+const TextTitleCentered = styled.Text`
+    width: 100%;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+`
+const Separator = styled.View`
+    borderBottomColor: #CCCCCC;
+    borderBottomWidth: 1;
+    marginVertical: 10;
+`
 
-const AlertText = styled.Text`
-  font-weight: bold;
-  color: #2d3753;
-  text-align: center;
-`;
-
-export interface ILogin {
-    onSubmit: (email: string, password: string) => void;
-    goToRegister: () => void;
-}
-
-const Profile: React.FC<ILogin> = ({onSubmit, goToRegister}) => {
+const Profile: React.FC<any> = () => {
     const auth = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const handleSubmit = () => onSubmit(email, password)
-
+    const handleSubmit = () => auth.logout()
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Container>
                 <Title>Profile</Title>
-                {auth.error.type === "login" ? <AlertContainer>
-                                    <AlertText width="100%" textAlign="center"> Error! {auth.error.message} </AlertText>
-                               </AlertContainer>: null}
-                <Text>Email: </Text>
-                <Input keyboardType="email-address" placeholder="email@domain.com" onChangeText={setEmail}/>
-                <Text>Password: </Text>
-                <Input secureTextEntry placeholder="************" onChangeText={setPassword} />
+                <Separator />
+                <TextTitleCentered>User data</TextTitleCentered>
+                <TextContainer>
+                    <TextTitle>ID:</TextTitle>
+                    <Text>{auth.user_details.user.id}</Text>
+                </TextContainer>
+                <TextContainer>
+                    <TextTitle>Email:</TextTitle>
+                    <Text> {auth.user_details.user.email} </Text>
+                </TextContainer>
+                <Separator />
+                <TextTitleCentered>Game statistics</TextTitleCentered>
+
+                <TextContainer>
+                    <TextTitle>Played games:</TextTitle>
+                    <Text>{auth.user_details.gamesPlayed}</Text>
+                </TextContainer>
+                <TextContainer>
+                    <TextTitle>Won Games:</TextTitle>
+                    <Text>{auth.user_details.gamesWon}</Text>
+                </TextContainer>
+                <TextContainer>
+                    <TextTitle>Lost Games:</TextTitle>
+                    <Text>{auth.user_details.gamesLost}</Text>
+                </TextContainer>
+                <TextContainer>
+                    <TextTitle>Win/Loss Rate:</TextTitle>
+                    <Text>{(Number(auth.user_details.gamesWon) / Number(auth.user_details.gamesLost)).toFixed(2)}</Text>
+                </TextContainer>
+
+                <Separator />
                 <ButtonContainer>
                     <Button onPress={handleSubmit}>
-                        <ButtonText>Submit</ButtonText>
+                        <ButtonText>Log Out</ButtonText>
                     </Button>
-                    <Text>Don't have an accont?</Text>
-                    <Text style={{ color: 'blue', textDecorationLine: 'underline' }} onPress={goToRegister}>
-                        Register Now
-                    </Text>
-                    {/* <Button onPress={goToRegister}>
-                        <ButtonText>Register</ButtonText>
-                    </Button> */}
                 </ButtonContainer>
             </Container>
         </SafeAreaView>

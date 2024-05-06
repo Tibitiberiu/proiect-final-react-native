@@ -64,40 +64,13 @@ const AlertText = styled.Text`
   text-align: center;
 `;
 
-export interface ILogin {
-    onSubmit: (email: string, password: string) => void;
-    goToRegister: () => void;
-}
 
-const Homepage: React.FC<ILogin> = ({onSubmit, goToRegister}) => {
-    const auth = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const handleSubmit = () => onSubmit(email, password)
-
+const Homepage: React.FC = () => {
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
             <Container>
                 <Title>Homepage</Title>
-                {auth.error.type === "login" ? <AlertContainer>
-                                    <AlertText width="100%" textAlign="center"> Error! {auth.error.message} </AlertText>
-                               </AlertContainer>: null}
-                <Text>Email: </Text>
-                <Input keyboardType="email-address" placeholder="email@domain.com" onChangeText={setEmail}/>
-                <Text>Password: </Text>
-                <Input secureTextEntry placeholder="************" onChangeText={setPassword} />
-                <ButtonContainer>
-                    <Button onPress={handleSubmit}>
-                        <ButtonText>Submit</ButtonText>
-                    </Button>
-                    <Text>Don't have an accont?</Text>
-                    <Text style={{ color: 'blue', textDecorationLine: 'underline' }} onPress={goToRegister}>
-                        Register Now
-                    </Text>
-                    {/* <Button onPress={goToRegister}>
-                        <ButtonText>Register</ButtonText>
-                    </Button> */}
-                </ButtonContainer>
+                
             </Container>
         </SafeAreaView>
     )

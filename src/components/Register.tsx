@@ -64,16 +64,12 @@ const AlertText = styled.Text`
   text-align: center;
 `;
 
-export interface ILogin {
-    onSubmit: (email: string, password: string) => void
-}
 
-const Register: React.FC<ILogin> = ({onSubmit}) => {
+const Register : React.FC = () => {
     const auth = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
-    const handleSubmit = () => onSubmit(email, password)
+    const handleSubmit = () => auth.register(email, password)
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
