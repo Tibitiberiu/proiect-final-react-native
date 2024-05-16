@@ -9,6 +9,7 @@ export const Container = styled.View`
     background-color: white;
     border: 1px solid grey;
     border-radius: 20px;
+    max-height: 90%;
 `
 
 export const ButtonContainer = styled.View`
@@ -105,4 +106,28 @@ export const TextTitleCentered = styled.Text`
     text-align: center;
     font-size: 20px;
     font-weight: bold;
+`
+
+export const GameList = styled.ScrollView`
+    margin: 0 -30px 0 -30px;
+`
+
+export const Row = styled.View`
+
+    display: flex;
+    flex-direction: row;
+`
+
+export const Cell = styled.TouchableOpacity`
+    width: 30px;
+    height: 30px;
+    border: 1px solid;
+    margin: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+export const TableContainer = styled.View`
+    align-items: center
 `

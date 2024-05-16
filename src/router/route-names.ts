@@ -1,10 +1,15 @@
 export const enum AuthRouteNames {
-    LOGIN = 'LOGIN',
-    REGISTER = 'REGISTER'
+    LOGIN = 'Login',
+    REGISTER = 'Register'
 }
 
 
 export const enum HomepageRouteNames {
     HOMEPAGE = 'Homepage',
-    PROFILE = 'Profile'
+    PROFILE = 'Profile',
+}
+
+
+export const enum GameRouteNames {
+    TABLE = 'Table'
 }

@@ -18,7 +18,10 @@ interface IAuthContext {
     login: (email: string, password: string) => Promise<void>;
     register: (email: string, password: string, navigation: NavigationProp<any>) => Promise<void>;
     logout: () => Promise<void>;
+    setIsLoading: (loading: boolean) => void;
+    setIsInGame: (status: string) => Promise<void>;
     isLoading: boolean,
+    isInGame: string,
     error: {type: string, message: string, success: boolean},
 }
 
@@ -37,13 +40,17 @@ const AuthContext = createContext<IAuthContext>({
     login: async () => {},
     register: async () => {},
     logout: async () => {},
+    setIsLoading: (loading: boolean) => {},
+    setIsInGame: async (isInGame: string) => {},
     isLoading: false,
+    isInGame: "",
     error: {type: "", message: "", success: false},
 })
 
 export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
 
     const [token, setToken] = useState<string>('');
+    const [isInGame, setIsInGame] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<{type: string, message: string, success: boolean}>({type: '', message: '', success: false});
     const [user_details, setUserDetails] = useState<IUserDetails>({user: {
@@ -56,7 +63,7 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
                                                                     currentlyGamesPlaying: -1,
                                                                 });
     useEffect(() => {
-        setIsLoading(true) 
+        // setIsLoading(true) 
         AsyncStorage.getItem('token')
         .then(value => {
             if (value !== null) {
@@ -69,7 +76,7 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
                 setUserDetails(JSON.parse(value))
             }
         })
-        .finally(() => {setIsLoading(false)})
+        // .finally(() => {setIsLoading(false)})
     }, []);
     const handleLogin = async (email: string, password: string) => {
         try {
@@ -118,6 +125,12 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
                 });
         setError({type: 'login', message: 'Log out successfully!', success: true});
     };
+    const handleIsLoading = (loading: boolean) => {
+       setIsLoading(loading);
+    };
+    const handleIsInGame = async (status: string) => {
+        setIsInGame(status);
+     };
     return (
         <AuthContext.Provider value={{
             token,
@@ -125,6 +138,9 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
             login: handleLogin,
             register: handleRegister,
             logout: handleLogOut,
+            setIsLoading: handleIsLoading,
+            setIsInGame: handleIsInGame,
+            isInGame,
             isLoading,
             error
         }}>
