@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import { SafeAreaView, Text } from "react-native";
 import { useAuth } from "../hooks/authContext";
 import { Button, ButtonContainerProfile, ButtonText, Container, Separator, TextContainer, TextTitle, TextTitleCentered, Title } from "./Components";
@@ -7,6 +7,9 @@ import { Button, ButtonContainerProfile, ButtonText, Container, Separator, TextC
 
 const Profile: React.FC<any> = () => {
     const auth = useAuth();
+    useEffect(() => {
+        auth.updateData();
+    }, []);
     const handleSubmit = () => auth.logout()
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>

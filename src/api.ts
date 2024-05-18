@@ -86,12 +86,13 @@ export const joinGame = async (token: string, gameId: string) => {
     })
 
     const data = await result.json();
-    console.log(data);
+    //console.log(data);
     return data
 }
 
 
 export const sendMove = async (token: string, gameId: string, cellRow: TableRows, cellColumn: TableColumns) => {
+    //console.log(cellRow, cellColumn)
     const result = await fetch(`${baseUrl}/game/strike/${gameId}`, {
         method: 'post',
         headers: {
@@ -99,7 +100,8 @@ export const sendMove = async (token: string, gameId: string, cellRow: TableRows
             'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-            cellRow, cellColumn
+            x: cellColumn,
+            y: cellRow
         })
     })
 
@@ -135,6 +137,6 @@ export const sendGameConfiguration = async (token: string, gameId: string, ships
     });
 
     const data = await result.json();
-    console.log(data);
+    //console.log(data);
     return data;
 }

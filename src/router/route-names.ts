@@ -11,5 +11,6 @@ export const enum HomepageRouteNames {
 
 
 export const enum GameRouteNames {
-    TABLE = 'Table'
+    TABLE = 'Table',
+    TABLEPLAY = 'TablePlay'
 }

@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import Table from "../../components/Table"
 import { useAuth } from "../../hooks/authContext";
 import { GameContextProvider, useGameContext } from "../../hooks/gameContext";
-const TableScreen = () => {
+import TableReload from "../../components/TableReload";
+
+const TableReloadScreen = () => {
     const gameCtx = useGameContext();
     const auth = useAuth();
     useEffect(() => {
@@ -10,12 +11,12 @@ const TableScreen = () => {
     }, [])
 
     return (
-        <Table state={gameCtx.tableState}/>
+        <TablePlay/>
     )
 }
 
 export default () => (
     <GameContextProvider>
-        <TableScreen/>
+        <TableReloadScreen/>
     </GameContextProvider>
 );

@@ -7,6 +7,7 @@ import { createGame, listGames } from "../api";
 import GameListItem from "./GameListItem";
 import { useNavigation } from "@react-navigation/native";
 import { GameRouteNames, HomepageRouteNames } from "../router/route-names";
+import { GameStatus } from "../hooks/gameContext";
 
 
 const Homepage: React.FC = () => {
@@ -56,8 +57,10 @@ const Homepage: React.FC = () => {
                     {auth.isLoading ? <ActivityIndicator size="large" style = {{paddingTop: 20}} /> : null}
                     {
                     games.slice().reverse().map(game => (
-                        <GameListItem status={game.status} id={game.id} key={game.id} onPress={() => { 
-                            auth.joinGame(game.id);
+                        <GameListItem status={game.status} winner={game.playerToMoveId} id={game.id} key={game.id} onPress={() => { 
+                            if(game.status == GameStatus.FINISHED){
+                               console.log("Test");
+                            } else auth.joinGame(game.id);
                         }} />
                     ))}
                 </GameList>

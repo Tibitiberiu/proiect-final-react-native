@@ -2,22 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
 import { Button, ButtonContainer, ButtonText, Cell, Container, Row, SelectorContainer, TableContainer, TextContainer, TextTitle } from './Components';
 import { useAuth } from '../hooks/authContext';
-import { ICell, ShipDirection, ShipSize, TableColumns, TableRows, useGameContext, Ship } from '../hooks/gameContext';
+import { ICell, ShipDirection, ShipSize, TableColumns, TableRows, useGameContext, Ship, GameStatus } from '../hooks/gameContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
+import { AuthRouteNames, GameRouteNames } from '../router/route-names';
 
 interface ITable {
     state: ICell[][];
-    onClick: (cellRow: TableRows, cellColumn: TableColumns) => Promise<any>;
 }
 
-const Table: React.FC<ITable> = ({state, onClick}) => {
+const Table: React.FC<ITable> = ({state}) => {
     const auth = useAuth();
     const gameCtx = useGameContext();
     const [shipDirection, setShipDirection] = useState<ShipDirection>(ShipDirection.VERTICAL);
     const [shipSize, setShipSize] = useState<ShipSize | null>(6);
     const [menuItems, setMenuItems] = useState<number[]>([0, 0, 0, 0]);
     const [shipList, setShipList] = useState<Ship[] | null>(null);
+    const navigation = useNavigation<any>();
     const addShip = (newShip: Ship) => {
         //console.log(shipList)
         if (shipList) {
@@ -26,17 +28,26 @@ const Table: React.FC<ITable> = ({state, onClick}) => {
           setShipList([newShip]);
         }
     };
-    useEffect(() => {
-        console.log(menuItems);
-    }, [menuItems]);
+    // useEffect(() => {
+    //     console.log(menuItems);
+    // }, [menuItems]);
     useEffect(() => {
         //console.log(shipList);
         if(menuItems.toString() === [1, 2, 3, 4].toString() && shipList != null){
             //console.log("test")
+            //console.log(shipList)
             gameCtx.sendGameConfiguration(shipList);
             //console.log("data sent");
         }
     }, [shipList]);
+    const handleGoToTablePlay = () => {
+        navigation.navigate(GameRouteNames.TABLEPLAY);
+    }
+    useEffect(() => {
+        if (gameCtx.game?.status === GameStatus.ACTIVE) { // DE MODIFICAT CU ACTIVE
+            handleGoToTablePlay();
+        }
+    }, [gameCtx.game?.status, navigation]);
     const handleBack = () => auth.setIsInGame("");
     const sizeToNumber = {
         6: 0,
@@ -70,8 +81,8 @@ const Table: React.FC<ITable> = ({state, onClick}) => {
                                         <Cell style={{ backgroundColor: value ? 'red' : 'none' }} row = {row} key = {column} onPress={() => {
                                             if(shipSize != null){
                                                 try {
-                                                    gameCtx.placeShip(row, column, shipSize, shipDirection)
-                                                    addShip({x: row, y: column, size: shipSize, direction: shipDirection})
+                                                    gameCtx.placeShip(column, row, shipSize, shipDirection)
+                                                    addShip({x: column, y: row, size: shipSize, direction: shipDirection})
                                                     const newMenuItems = Array.from({ length: 4 }, (_, i) => {
                                                         if(sizeToNumber[shipSize] === i){
                                                             if(menuItems[i] + 1 === sizeToMaxValue[shipSize]){

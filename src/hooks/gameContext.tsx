@@ -1,12 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useAuth } from "./authContext";
-import { getGameInfo, joinGame, sendGameConfiguration } from "../api";
+import { getGameInfo, joinGame, sendGameConfiguration, sendMove } from "../api";
 import { Alert, Modal, Pressable, View } from "react-native";
 
-export type TableColumns = 1 | 2| 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
-export type TableRows = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J';
+export type TableRows = 1 | 2| 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type TableColumns = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J';
 export type CellValue = true | false;
-export type playerToMove = number | null;
 export type ShipSize = 2 | 3 | 4 | 6;
 
 export enum ShipDirection {
@@ -20,6 +19,11 @@ export interface ICell {
     value: CellValue;
 }
 
+export interface StrikeCell {
+    row: TableRows;
+    column: TableColumns;
+    value: -1 | 0 | 1;
+}
 
 interface PlayerStrike {
     x: string;
@@ -33,7 +37,7 @@ interface GameMove {
     playerId: number;
 }
 
-enum GameStatus {
+export enum GameStatus {
     CREATED = "CREATED",
     MAP_CONFIG = "MAP_CONFIG",
     ACTIVE = "ACTIVE",
@@ -43,7 +47,7 @@ enum GameStatus {
 interface Game {
     status: GameStatus;
     moves: GameMove[];
-    playerToMove: playerToMove;
+    playerToMoveId: string;
 }
 
 interface GameList {
@@ -74,34 +78,52 @@ interface GameContext {
     game: Game | null;
     loadGame: (id: string) => Promise<void>;
     sendGameConfiguration: (ships: Ship[]) => Promise<void>;
+    sendMove: (row: TableRows, column: TableColumns) => Promise<void>;
     tableState: ICell[][];
-    placeShip: (cellRow: TableRows, cellColumn: TableColumns, shipSize: ShipSize , shipDirection: ShipDirection) => void; 
+    strikeTableState: StrikeCell[][];
+    placeShip: (cellColumn: TableColumns, cellRow: TableRows, shipSize: ShipSize , shipDirection: ShipDirection) => void; 
 }
 
 const Context = createContext<GameContext>({
     loadGame: () => Promise.resolve(),
     sendGameConfiguration: () => Promise.resolve(),
+    sendMove: () => Promise.resolve(),
     game: null,
     tableState: [],
+    strikeTableState: [],
     placeShip: () => {}
 });
 
 const baseTableState: ICell[][] = [
-    [{row: 'A', column: 1, value: false}, {row: 'A', column: 2, value: false}, {row: 'A', column: 3, value: false}, {row: 'A', column: 4, value: false}, {row: 'A', column: 5, value: false}, {row: 'A', column: 6, value: false}, {row: 'A', column: 7, value: false}, {row: 'A', column: 8, value: false}, {row: 'A', column: 9, value: false}, {row: 'A', column: 10, value: false}],
-    [{row: 'B', column: 1, value: false}, {row: 'B', column: 2, value: false}, {row: 'B', column: 3, value: false}, {row: 'B', column: 4, value: false}, {row: 'B', column: 5, value: false}, {row: 'B', column: 6, value: false}, {row: 'B', column: 7, value: false}, {row: 'B', column: 8, value: false}, {row: 'B', column: 9, value: false}, {row: 'B', column: 10, value: false}],
-    [{row: 'C', column: 1, value: false}, {row: 'C', column: 2, value: false}, {row: 'C', column: 3, value: false}, {row: 'C', column: 4, value: false}, {row: 'C', column: 5, value: false}, {row: 'C', column: 6, value: false}, {row: 'C', column: 7, value: false}, {row: 'C', column: 8, value: false}, {row: 'C', column: 9, value: false}, {row: 'C', column: 10, value: false}],
-    [{row: 'D', column: 1, value: false}, {row: 'D', column: 2, value: false}, {row: 'D', column: 3, value: false}, {row: 'D', column: 4, value: false}, {row: 'D', column: 5, value: false}, {row: 'D', column: 6, value: false}, {row: 'D', column: 7, value: false}, {row: 'D', column: 8, value: false}, {row: 'D', column: 9, value: false}, {row: 'D', column: 10, value: false}],
-    [{row: 'E', column: 1, value: false}, {row: 'E', column: 2, value: false}, {row: 'E', column: 3, value: false}, {row: 'E', column: 4, value: false}, {row: 'E', column: 5, value: false}, {row: 'E', column: 6, value: false}, {row: 'E', column: 7, value: false}, {row: 'E', column: 8, value: false}, {row: 'E', column: 9, value: false}, {row: 'E', column: 10, value: false}],
-    [{row: 'F', column: 1, value: false}, {row: 'F', column: 2, value: false}, {row: 'F', column: 3, value: false}, {row: 'F', column: 4, value: false}, {row: 'F', column: 5, value: false}, {row: 'F', column: 6, value: false}, {row: 'F', column: 7, value: false}, {row: 'F', column: 8, value: false}, {row: 'F', column: 9, value: false}, {row: 'F', column: 10, value: false}],
-    [{row: 'G', column: 1, value: false}, {row: 'G', column: 2, value: false}, {row: 'G', column: 3, value: false}, {row: 'G', column: 4, value: false}, {row: 'G', column: 5, value: false}, {row: 'G', column: 6, value: false}, {row: 'G', column: 7, value: false}, {row: 'G', column: 8, value: false}, {row: 'G', column: 9, value: false}, {row: 'G', column: 10, value: false}],
-    [{row: 'H', column: 1, value: false}, {row: 'H', column: 2, value: false}, {row: 'H', column: 3, value: false}, {row: 'H', column: 4, value: false}, {row: 'H', column: 5, value: false}, {row: 'H', column: 6, value: false}, {row: 'H', column: 7, value: false}, {row: 'H', column: 8, value: false}, {row: 'H', column: 9, value: false}, {row: 'H', column: 10, value: false}],
-    [{row: 'I', column: 1, value: false}, {row: 'I', column: 2, value: false}, {row: 'I', column: 3, value: false}, {row: 'I', column: 4, value: false}, {row: 'I', column: 5, value: false}, {row: 'I', column: 6, value: false}, {row: 'I', column: 7, value: false}, {row: 'I', column: 8, value: false}, {row: 'I', column: 9, value: false}, {row: 'I', column: 10, value: false}],
-    [{row: 'J', column: 1, value: false}, {row: 'J', column: 2, value: false}, {row: 'J', column: 3, value: false}, {row: 'J', column: 4, value: false}, {row: 'J', column: 5, value: false}, {row: 'J', column: 6, value: false}, {row: 'J', column: 7, value: false}, {row: 'J', column: 8, value: false}, {row: 'J', column: 9, value: false}, {row: 'J', column: 10, value: false}],
+    [{row: 1, column: 'A', value: false}, {row: 1, column: 'B', value: false}, {row: 1, column: 'C', value: false}, {row: 1, column: 'D', value: false}, {row: 1, column: 'E', value: false}, {row: 1, column: 'F', value: false}, {row: 1, column: 'G', value: false}, {row: 1, column: 'H', value: false}, {row: 1, column: 'I', value: false}, {row: 1, column: 'J', value: false}],
+    [{row: 2, column: 'A', value: false}, {row: 2, column: 'B', value: false}, {row: 2, column: 'C', value: false}, {row: 2, column: 'D', value: false}, {row: 2, column: 'E', value: false}, {row: 2, column: 'F', value: false}, {row: 2, column: 'G', value: false}, {row: 2, column: 'H', value: false}, {row: 2, column: 'I', value: false}, {row: 2, column: 'J', value: false}],
+    [{row: 3, column: 'A', value: false}, {row: 3, column: 'B', value: false}, {row: 3, column: 'C', value: false}, {row: 3, column: 'D', value: false}, {row: 3, column: 'E', value: false}, {row: 3, column: 'F', value: false}, {row: 3, column: 'G', value: false}, {row: 3, column: 'H', value: false}, {row: 3, column: 'I', value: false}, {row: 3, column: 'J', value: false}],
+    [{row: 4, column: 'A', value: false}, {row: 4, column: 'B', value: false}, {row: 4, column: 'C', value: false}, {row: 4, column: 'D', value: false}, {row: 4, column: 'E', value: false}, {row: 4, column: 'F', value: false}, {row: 4, column: 'G', value: false}, {row: 4, column: 'H', value: false}, {row: 4, column: 'I', value: false}, {row: 4, column: 'J', value: false}],
+    [{row: 5, column: 'A', value: false}, {row: 5, column: 'B', value: false}, {row: 5, column: 'C', value: false}, {row: 5, column: 'D', value: false}, {row: 5, column: 'E', value: false}, {row: 5, column: 'F', value: false}, {row: 5, column: 'G', value: false}, {row: 5, column: 'H', value: false}, {row: 5, column: 'I', value: false}, {row: 5, column: 'J', value: false}],
+    [{row: 6, column: 'A', value: false}, {row: 6, column: 'B', value: false}, {row: 6, column: 'C', value: false}, {row: 6, column: 'D', value: false}, {row: 6, column: 'E', value: false}, {row: 6, column: 'F', value: false}, {row: 6, column: 'G', value: false}, {row: 6, column: 'H', value: false}, {row: 6, column: 'I', value: false}, {row: 6, column: 'J', value: false}],
+    [{row: 7, column: 'A', value: false}, {row: 7, column: 'B', value: false}, {row: 7, column: 'C', value: false}, {row: 7, column: 'D', value: false}, {row: 7, column: 'E', value: false}, {row: 7, column: 'F', value: false}, {row: 7, column: 'G', value: false}, {row: 7, column: 'H', value: false}, {row: 7, column: 'I', value: false}, {row: 7, column: 'J', value: false}],
+    [{row: 8, column: 'A', value: false}, {row: 8, column: 'B', value: false}, {row: 8, column: 'C', value: false}, {row: 8, column: 'D', value: false}, {row: 8, column: 'E', value: false}, {row: 8, column: 'F', value: false}, {row: 8, column: 'G', value: false}, {row: 8, column: 'H', value: false}, {row: 8, column: 'I', value: false}, {row: 8, column: 'J', value: false}],
+    [{row: 9, column: 'A', value: false}, {row: 9, column: 'B', value: false}, {row: 9, column: 'C', value: false}, {row: 9, column: 'D', value: false}, {row: 9, column: 'E', value: false}, {row: 9, column: 'F', value: false}, {row: 9, column: 'G', value: false}, {row: 9, column: 'H', value: false}, {row: 9, column: 'I', value: false}, {row: 9, column: 'J', value: false}],
+    [{row: 10, column: 'A', value: false}, {row: 10, column: 'B', value: false}, {row: 10, column: 'C', value: false}, {row: 10, column: 'D', value: false}, {row: 10, column: 'E', value: false}, {row: 10, column: 'F', value: false}, {row: 10, column: 'G', value: false}, {row: 10, column: 'H', value: false}, {row: 10, column: 'I', value: false}, {row: 10, column: 'J', value: false}],
 ]
 
 
+const baseStrikeTableState: StrikeCell[][] = [
+    [{row: 1, column: 'A', value: 0}, {row: 1, column: 'B', value: 0}, {row: 1, column: 'C', value: 0}, {row: 1, column: 'D', value: 0}, {row: 1, column: 'E', value: 0}, {row: 1, column: 'F', value: 0}, {row: 1, column: 'G', value: 0}, {row: 1, column: 'H', value: 0}, {row: 1, column: 'I', value: 0}, {row: 1, column: 'J', value: 0}],
+    [{row: 2, column: 'A', value: 0}, {row: 2, column: 'B', value: 0}, {row: 2, column: 'C', value: 0}, {row: 2, column: 'D', value: 0}, {row: 2, column: 'E', value: 0}, {row: 2, column: 'F', value: 0}, {row: 2, column: 'G', value: 0}, {row: 2, column: 'H', value: 0}, {row: 2, column: 'I', value: 0}, {row: 2, column: 'J', value: 0}],
+    [{row: 3, column: 'A', value: 0}, {row: 3, column: 'B', value: 0}, {row: 3, column: 'C', value: 0}, {row: 3, column: 'D', value: 0}, {row: 3, column: 'E', value: 0}, {row: 3, column: 'F', value: 0}, {row: 3, column: 'G', value: 0}, {row: 3, column: 'H', value: 0}, {row: 3, column: 'I', value: 0}, {row: 3, column: 'J', value: 0}],
+    [{row: 4, column: 'A', value: 0}, {row: 4, column: 'B', value: 0}, {row: 4, column: 'C', value: 0}, {row: 4, column: 'D', value: 0}, {row: 4, column: 'E', value: 0}, {row: 4, column: 'F', value: 0}, {row: 4, column: 'G', value: 0}, {row: 4, column: 'H', value: 0}, {row: 4, column: 'I', value: 0}, {row: 4, column: 'J', value: 0}],
+    [{row: 5, column: 'A', value: 0}, {row: 5, column: 'B', value: 0}, {row: 5, column: 'C', value: 0}, {row: 5, column: 'D', value: 0}, {row: 5, column: 'E', value: 0}, {row: 5, column: 'F', value: 0}, {row: 5, column: 'G', value: 0}, {row: 5, column: 'H', value: 0}, {row: 5, column: 'I', value: 0}, {row: 5, column: 'J', value: 0}],
+    [{row: 6, column: 'A', value: 0}, {row: 6, column: 'B', value: 0}, {row: 6, column: 'C', value: 0}, {row: 6, column: 'D', value: 0}, {row: 6, column: 'E', value: 0}, {row: 6, column: 'F', value: 0}, {row: 6, column: 'G', value: 0}, {row: 6, column: 'H', value: 0}, {row: 6, column: 'I', value: 0}, {row: 6, column: 'J', value: 0}],
+    [{row: 7, column: 'A', value: 0}, {row: 7, column: 'B', value: 0}, {row: 7, column: 'C', value: 0}, {row: 7, column: 'D', value: 0}, {row: 7, column: 'E', value: 0}, {row: 7, column: 'F', value: 0}, {row: 7, column: 'G', value: 0}, {row: 7, column: 'H', value: 0}, {row: 7, column: 'I', value: 0}, {row: 7, column: 'J', value: 0}],
+    [{row: 8, column: 'A', value: 0}, {row: 8, column: 'B', value: 0}, {row: 8, column: 'C', value: 0}, {row: 8, column: 'D', value: 0}, {row: 8, column: 'E', value: 0}, {row: 8, column: 'F', value: 0}, {row: 8, column: 'G', value: 0}, {row: 8, column: 'H', value: 0}, {row: 8, column: 'I', value: 0}, {row: 8, column: 'J', value: 0}],
+    [{row: 9, column: 'A', value: 0}, {row: 9, column: 'B', value: 0}, {row: 9, column: 'C', value: 0}, {row: 9, column: 'D', value: 0}, {row: 9, column: 'E', value: 0}, {row: 9, column: 'F', value: 0}, {row: 9, column: 'G', value: 0}, {row: 9, column: 'H', value: 0}, {row: 9, column: 'I', value: 0}, {row: 9, column: 'J', value: 0}],
+    [{row: 10, column: 'A', value: 0}, {row: 10, column: 'B', value: 0}, {row: 10, column: 'C', value: 0}, {row: 10, column: 'D', value: 0}, {row: 10, column: 'E', value: 0}, {row: 10, column: 'F', value: 0}, {row: 10, column: 'G', value: 0}, {row: 10, column: 'H', value: 0}, {row: 10, column: 'I', value: 0}, {row: 10, column: 'J', value: 0}],
+]
+
 export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
     const [tableState, setTableState] = useState<ICell[][]>(baseTableState); // Am modificat eu aici
+    const [strikeTableState, setStrikeTableState] = useState<StrikeCell[][]>(baseStrikeTableState); // Am modificat eu aici
     const auth = useAuth();
     const [game, setGame] = useState<Game | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -116,13 +138,36 @@ export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({chil
         const result = await sendGameConfiguration(auth.token, auth.isInGame, ships);
     }
 
+    const handleSendMove = async(row: TableRows, column: TableColumns) => {
+        const result = await sendMove(auth.token, auth.isInGame, row, column);
+        const newStrikeTableState = JSON.parse(JSON.stringify(strikeTableState));
+        //console.log(result);
+        if(result.result === true || result.result === false){
+            newStrikeTableState.forEach((line: StrikeCell[]) => {
+                line.forEach(cell => {
+                    if(row === cell.row && column === cell.column){
+                        if(cell.value == 0){
+                            if(result.result === true){
+                                cell.value = 1;
+                            } else {
+                                cell.value = -1;
+                            }
+                        }
+                    }
+                })
+            })
+        }
+        //console.log(newStrikeTableState);
+        setStrikeTableState(newStrikeTableState);
+    }
+
     const modifyCells = (cells: {row: TableRows, column: TableColumns}[]) => {
         const newTableState = JSON.parse(JSON.stringify(tableState));
         newTableState.forEach((line: ICell[]) => {
             line.forEach(cell => {
                 if(cells.some(obj => obj.row === cell.row && obj.column === cell.column)){
                     if(cell.value === false)
-                        cell.value = true;
+                        cell.value = true; // Poti sa intersectezi vertical cu orizontal si nu e bine
                     else throw new Error('Collision');
                 }
             })
@@ -130,15 +175,13 @@ export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({chil
         setTableState(newTableState);
     }
 
-
     
-    const placeShip = (cellRow: TableRows, cellColumn: TableColumns, shipSize: ShipSize , shipDirection: ShipDirection) => {
+    const placeShip = (cellColumn: TableColumns, cellRow: TableRows, shipSize: ShipSize , shipDirection: ShipDirection) => {
         if(shipDirection === ShipDirection.VERTICAL){
-            const lowerMargin = (cellRow.charCodeAt(0) - 'A'.charCodeAt(0) + 1) + shipSize - 1;
-            const currentRow = cellRow.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+            const lowerMargin = cellRow + shipSize - 1
             if(lowerMargin <= 10){
-                const generatedObjects = Array.from({ length: lowerMargin - currentRow + 1 }, (_, i) => {
-                    const row = String.fromCharCode(65 + lowerMargin - i - 1) as TableRows;
+                const generatedObjects = Array.from({ length: shipSize }, (_, i) => {
+                    const row = lowerMargin - i as TableRows;
                     return { row, column: cellColumn };
                 });
                 try {
@@ -148,10 +191,11 @@ export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({chil
                 }
             } else throw new Error("Nu se poate plasa aici")
         } else { 
-            const rightMargin = cellColumn + shipSize - 1;
+            const rightMargin = (cellColumn.charCodeAt(0) - 'A'.charCodeAt(0) + 1) + shipSize - 1;
+            const currentColumn = cellColumn.charCodeAt(0) - 'A'.charCodeAt(0) + 1;
             if(rightMargin <= 10){
-                const generatedObjects = Array.from({ length: rightMargin - cellColumn + 1 }, (_, i) => {
-                    const column = cellColumn + i as TableColumns;
+                const generatedObjects = Array.from({ length: shipSize }, (_, i) => {
+                    const column = String.fromCharCode(65 + currentColumn + shipSize - i - 2) as TableColumns;
                     return { row: cellRow , column };
                 });
                 try {
@@ -174,7 +218,7 @@ export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({chil
         }
     }, [game])
 
-    return (<Context.Provider value={{loadGame: handleLoadGame, game, tableState, placeShip: placeShip, sendGameConfiguration: handleSendGameConfiguration}}>
+    return (<Context.Provider value={{loadGame: handleLoadGame, game, tableState, strikeTableState, placeShip: placeShip, sendGameConfiguration: handleSendGameConfiguration, sendMove: handleSendMove}}>
         {children}
     </Context.Provider>)
 }

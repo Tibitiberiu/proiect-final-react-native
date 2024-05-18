@@ -21,6 +21,7 @@ interface IAuthContext {
     setIsLoading: (loading: boolean) => void;
     setIsInGame: (status: string) => Promise<void>;
     joinGame: (gameId: string) => Promise<void>;
+    updateData: () => Promise<void>;
     isLoading: boolean,
     isInGame: string,
     error: {type: string, message: string, success: boolean},
@@ -44,6 +45,7 @@ const AuthContext = createContext<IAuthContext>({
     setIsLoading: (loading: boolean) => {},
     setIsInGame: async (isInGame: string) => {},
     joinGame: async (gameId: string) => {},
+    updateData: async () => {},
     isLoading: false,
     isInGame: "",
     error: {type: "", message: "", success: false},
@@ -80,6 +82,13 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
         })
         // .finally(() => {setIsLoading(false)})
     }, []);
+    const handleUpdateData = async () => {
+        const result = await getUserInfo(token);
+        if(result) { 
+            setUserDetails(result);
+            await AsyncStorage.setItem('userDetails', JSON.stringify(result));
+        }
+    }
     const handleLogin = async (email: string, password: string) => {
         try {
             const result = await login(email, password);
@@ -147,6 +156,7 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
             setIsLoading: handleIsLoading,
             setIsInGame: handleIsInGame,
             joinGame: handleJoinGame,
+            updateData: handleUpdateData,
             isInGame,
             isLoading,
             error
