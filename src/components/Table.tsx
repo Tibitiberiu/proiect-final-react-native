@@ -27,13 +27,16 @@ const Table: React.FC<ITable> = ({state, onClick}) => {
         }
     };
     useEffect(() => {
+        console.log(menuItems);
+    }, [menuItems]);
+    useEffect(() => {
         //console.log(shipList);
         if(menuItems.toString() === [1, 2, 3, 4].toString() && shipList != null){
             //console.log("test")
             gameCtx.sendGameConfiguration(shipList);
             //console.log("data sent");
         }
-    }, [shipList, shipSize]);
+    }, [shipList]);
     const handleBack = () => auth.setIsInGame("");
     const sizeToNumber = {
         6: 0,
@@ -62,43 +65,40 @@ const Table: React.FC<ITable> = ({state, onClick}) => {
                 {
                       state.map((line, index) => (
                         <Row key={index}>
-                            {line.map(({row, column, value}) => (
-                                <Cell style={{ backgroundColor: value ? 'red' : 'none' }} row = {row} key = {column} onPress={() => {
-                                    if(shipSize != null){
-                                        try {
-                                            gameCtx.placeShip(row, column, shipSize, shipDirection)
-                                            addShip({x: row, y: column, size: shipSize, direction: shipDirection})
-                                            const newMenuItems = Array.from({ length: 4 }, (_, i) => {
-                                                if(sizeToNumber[shipSize] === i){
-                                                    if(menuItems[i] + 1 === sizeToMaxValue[shipSize]){
-                                                        if(menuItems.toString() === [1, 2, 3, 4].toString()){
-                                                            setShipSize(null);
+                            {
+                                line.map(({row, column, value}) => (
+                                        <Cell style={{ backgroundColor: value ? 'red' : 'none' }} row = {row} key = {column} onPress={() => {
+                                            if(shipSize != null){
+                                                try {
+                                                    gameCtx.placeShip(row, column, shipSize, shipDirection)
+                                                    addShip({x: row, y: column, size: shipSize, direction: shipDirection})
+                                                    const newMenuItems = Array.from({ length: 4 }, (_, i) => {
+                                                        if(sizeToNumber[shipSize] === i){
+                                                            if(menuItems[i] + 1 === sizeToMaxValue[shipSize]){
+                                                                if(menuItems[0] < 1 && i != 0){
+                                                                    setShipSize(6);
+                                                                } else if(menuItems[1] < 2 && i != 1){
+                                                                    setShipSize(4);
+                                                                } else if(menuItems[2] < 3 && i != 2) {
+                                                                    setShipSize(3);
+                                                                } else if(menuItems[3] < 4 && i != 3) {
+                                                                    setShipSize(2);
+                                                                } else setShipSize(null);    
+                                                                return menuItems[i] + 1;
+                                                            } else return menuItems[i] + 1;
                                                         } else {
-                                                            if(menuItems[0] != 1){
-                                                                setShipSize(6);
-                                                            } else if(menuItems[1] != 2){
-                                                                setShipSize(4);
-                                                            } else if(menuItems[2] != 3) {
-                                                                setShipSize(3);
-                                                            } else if(menuItems[3] != 4) {
-                                                                setShipSize(2);
-                                                            }
+                                                            return menuItems[i];
                                                         }
-                                                    }
-                                                    return menuItems[i] + 1;
-                                                } else {
-                                                    return menuItems[i];
-                                                }
-                                            });
-                                            console.log(newMenuItems);
-                                            setMenuItems(newMenuItems)
-                                        } catch(e) {
+                                                    });
+                                                    setMenuItems(newMenuItems)
+                                                } catch(e) {
 
-                                        }
-                                        }
-                                    }
-                                }/>     
-                            ))}
+                                                }
+                                            }
+                                        }}/> 
+                                    )  
+                                )
+                            }
                         </Row>
                     ))
                 }
@@ -113,10 +113,10 @@ const Table: React.FC<ITable> = ({state, onClick}) => {
                                 mode={"dialog"} 
                                 onValueChange={(itemValue) => setShipSize(itemValue)} 
                                 > 
-                                {menuItems[0] <= 1 ? <Picker.Item label="Aircraft Carrier (6)" value = {6} /> : null }
-                                {menuItems[1] <= 2 ? <Picker.Item label="Battleship (4)" value = {4} /> : null }
-                                {menuItems[2] <= 3 ? <Picker.Item label="Cruiser (3)" value = {3} /> : null }
-                                {menuItems[3] <= 4 ? <Picker.Item label="Destroyer (2)" value = {2} /> : null }
+                                {menuItems[0] < 1 ? <Picker.Item label="Aircraft Carrier (6)" value = {6} /> : null }
+                                {menuItems[1] < 2 ? <Picker.Item label="Battleship (4)" value = {4} /> : null }
+                                {menuItems[2] < 3 ? <Picker.Item label="Cruiser (3)" value = {3} /> : null }
+                                {menuItems[3] < 4 ? <Picker.Item label="Destroyer (2)" value = {2} /> : null }
                             </Picker> 
                         </SelectorContainer>
                         <SelectorContainer>
