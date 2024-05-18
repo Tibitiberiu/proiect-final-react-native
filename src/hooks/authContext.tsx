@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getUserInfo, login, register } from "../api";
+import { getUserInfo, joinGame, login, register } from "../api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthRouteNames } from "../router/route-names";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
@@ -20,6 +20,7 @@ interface IAuthContext {
     logout: () => Promise<void>;
     setIsLoading: (loading: boolean) => void;
     setIsInGame: (status: string) => Promise<void>;
+    joinGame: (gameId: string) => Promise<void>;
     isLoading: boolean,
     isInGame: string,
     error: {type: string, message: string, success: boolean},
@@ -42,6 +43,7 @@ const AuthContext = createContext<IAuthContext>({
     logout: async () => {},
     setIsLoading: (loading: boolean) => {},
     setIsInGame: async (isInGame: string) => {},
+    joinGame: async (gameId: string) => {},
     isLoading: false,
     isInGame: "",
     error: {type: "", message: "", success: false},
@@ -130,7 +132,11 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
     };
     const handleIsInGame = async (status: string) => {
         setIsInGame(status);
-     };
+    };
+    const handleJoinGame = async(gameId: string) => {
+        const result = await joinGame(token, gameId);
+        setIsInGame(result.id);
+    }
     return (
         <AuthContext.Provider value={{
             token,
@@ -140,6 +146,7 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
             logout: handleLogOut,
             setIsLoading: handleIsLoading,
             setIsInGame: handleIsInGame,
+            joinGame: handleJoinGame,
             isInGame,
             isLoading,
             error

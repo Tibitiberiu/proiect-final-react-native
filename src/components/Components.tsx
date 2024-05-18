@@ -131,3 +131,9 @@ export const Cell = styled.TouchableOpacity`
 export const TableContainer = styled.View`
     align-items: center
 `
+
+export const SelectorContainer = styled.View`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+`

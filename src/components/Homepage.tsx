@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import styled from "styled-components/native";
-import { SafeAreaView, Text } from "react-native";
+import { ActivityIndicator, SafeAreaView, Text } from "react-native";
 import { Button, ButtonContainer, ButtonText, Container, GameList, Separator, TextTitle, Title } from "./Components";
 import { useAuth } from "../hooks/authContext";
 import { createGame, listGames } from "../api";
@@ -17,6 +17,7 @@ const Homepage: React.FC = () => {
     const navigation = useNavigation<any>();
     
     useEffect(() => {
+        auth.setIsLoading(true)
         listGames(auth.token)
           .then(({ total, games }) => {
             setGames(games);
@@ -24,8 +25,8 @@ const Homepage: React.FC = () => {
           })
           .catch(error => {
             console.error('Error fetching games:', error);
-            // Setează isLoading pe false aici pentru a gestiona eroarea și a opri încărcarea.
-          });
+          })
+          .finally(() => auth.setIsLoading(false));
       }, []);
       
     const handleAddGame = async () => {
@@ -52,17 +53,21 @@ const Homepage: React.FC = () => {
                 <Separator />
                 <TextTitle>Available Games ({gamesNumber}):</TextTitle>
                 <GameList>
-                    {games.map(game => (
+                    {auth.isLoading ? <ActivityIndicator size="large" style = {{paddingTop: 20}} /> : null}
+                    {
+                    games.slice().reverse().map(game => (
                         <GameListItem status={game.status} id={game.id} key={game.id} onPress={() => { 
-                            auth.setIsInGame(game.id);
+                            auth.joinGame(game.id);
                         }} />
                     ))}
                 </GameList>
-                <ButtonContainer>
-                    <Button>
-                        <ButtonText onPress={handleAddGame}>Create new game</ButtonText>
-                    </Button>
-                </ButtonContainer>
+                {!auth.isLoading ? 
+                    <ButtonContainer>
+                        <Button>
+                            <ButtonText onPress={handleAddGame}>Create new game</ButtonText>
+                        </Button>
+                    </ButtonContainer>
+                : null}               
             </Container>
         </SafeAreaView>
     )

@@ -10,19 +10,6 @@ import gameRoutes from "./game.router";
 const Router: React.FC  = () => {
     const auth = useAuth();
 
-    if (auth.isLoading) {
-        return (
-            <SafeAreaView style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                flex: 1
-            }}>
-            <ActivityIndicator size="large" />
-            </SafeAreaView>
-        )
-    }
-
     return (
         <NavigationContainer>
             {auth.token ? (auth.isInGame ? gameRoutes : homepageRoutes) : authRoutes}
