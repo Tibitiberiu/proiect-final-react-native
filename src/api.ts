@@ -1,4 +1,4 @@
-import { Ship, TableColumns, TableRows } from "./hooks/gameContext";
+import { Game, Ship, TableColumns, TableRows } from "./hooks/gameContext";
 
 const baseUrl = process.env.EXPO_PUBLIC_API_URL;
 const baseHeaders = {
@@ -109,7 +109,7 @@ export const sendMove = async (token: string, gameId: string, cellRow: TableRows
     return data
 }
 
-export const getGameInfo = async (token: string, gameId: string) => {
+export const getGameInfo = async (token: string, gameId: string): Promise<Game> => {
     const result = await fetch(`${baseUrl}/game/${gameId}`, {
         method: 'get',
         headers: {

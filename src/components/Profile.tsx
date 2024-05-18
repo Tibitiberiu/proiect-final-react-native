@@ -38,11 +38,11 @@ const Profile: React.FC<any> = () => {
                 </TextContainer>
                 <TextContainer>
                     <TextTitle>Lost Games:</TextTitle>
-                    <Text>{auth.user_details.gamesLost}</Text>
+                    <Text>{auth.user_details.gamesPlayed - auth.user_details.gamesWon}</Text>
                 </TextContainer>
                 <TextContainer>
                     <TextTitle>Win/Loss Rate:</TextTitle>
-                    <Text>{(Number(auth.user_details.gamesWon) / Number(auth.user_details.gamesLost)).toFixed(2)}</Text>
+                    <Text>{(Number(auth.user_details.gamesWon) / Number(auth.user_details.gamesPlayed - auth.user_details.gamesWon)).toFixed(2)}</Text>
                 </TextContainer>
 
                 <Separator />

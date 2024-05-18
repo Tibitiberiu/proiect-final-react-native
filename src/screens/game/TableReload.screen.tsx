@@ -11,7 +11,7 @@ const TableReloadScreen = () => {
     }, [])
 
     return (
-        <TablePlay/>
+        <TableReload/>
     )
 }
 

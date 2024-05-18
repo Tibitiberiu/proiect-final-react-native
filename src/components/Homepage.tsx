@@ -6,7 +6,7 @@ import { useAuth } from "../hooks/authContext";
 import { createGame, listGames } from "../api";
 import GameListItem from "./GameListItem";
 import { useNavigation } from "@react-navigation/native";
-import { GameRouteNames, HomepageRouteNames } from "../router/route-names";
+import { AuthRouteNames, GameRouteNames, HomepageRouteNames } from "../router/route-names";
 import { GameStatus } from "../hooks/gameContext";
 
 
@@ -15,7 +15,6 @@ const Homepage: React.FC = () => {
     const auth = useAuth();
     const [gamesNumber, setGamesNumber] = useState(0);
     const [games, setGames] = useState<any[]>([]);
-    const navigation = useNavigation<any>();
     
     useEffect(() => {
         auth.setIsLoading(true)
@@ -59,7 +58,8 @@ const Homepage: React.FC = () => {
                     games.slice().reverse().map(game => (
                         <GameListItem status={game.status} winner={game.playerToMoveId} id={game.id} key={game.id} onPress={() => { 
                             if(game.status == GameStatus.FINISHED){
-                               console.log("Test");
+                                auth.setIsInGameReload(game.id);
+                                auth.setIsInGame(game.id);
                             } else auth.joinGame(game.id);
                         }} />
                     ))}

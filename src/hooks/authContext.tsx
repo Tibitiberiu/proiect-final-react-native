@@ -20,10 +20,12 @@ interface IAuthContext {
     logout: () => Promise<void>;
     setIsLoading: (loading: boolean) => void;
     setIsInGame: (status: string) => Promise<void>;
+    setIsInGameReload: (gameId: string) => Promise<void>;
     joinGame: (gameId: string) => Promise<void>;
     updateData: () => Promise<void>;
     isLoading: boolean,
     isInGame: string,
+    isInGameReload: string,
     error: {type: string, message: string, success: boolean},
 }
 
@@ -44,10 +46,12 @@ const AuthContext = createContext<IAuthContext>({
     logout: async () => {},
     setIsLoading: (loading: boolean) => {},
     setIsInGame: async (isInGame: string) => {},
+    setIsInGameReload: async (gameId: string) => {},
     joinGame: async (gameId: string) => {},
     updateData: async () => {},
     isLoading: false,
     isInGame: "",
+    isInGameReload: "",
     error: {type: "", message: "", success: false},
 })
 
@@ -55,6 +59,7 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
 
     const [token, setToken] = useState<string>('');
     const [isInGame, setIsInGame] = useState<string>("");
+    const [isInGameReload, setIsInGameReload] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<{type: string, message: string, success: boolean}>({type: '', message: '', success: false});
     const [user_details, setUserDetails] = useState<IUserDetails>({user: {
@@ -142,6 +147,9 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
     const handleIsInGame = async (status: string) => {
         setIsInGame(status);
     };
+    const handleIsInGameReload = async (gameId: string) => {
+        setIsInGameReload(gameId);
+    };
     const handleJoinGame = async(gameId: string) => {
         const result = await joinGame(token, gameId);
         setIsInGame(result.id);
@@ -155,9 +163,11 @@ export const AuthContextProvider: React.FC<{children: React.ReactNode}> = ({chil
             logout: handleLogOut,
             setIsLoading: handleIsLoading,
             setIsInGame: handleIsInGame,
+            setIsInGameReload: handleIsInGameReload,
             joinGame: handleJoinGame,
             updateData: handleUpdateData,
             isInGame,
+            isInGameReload,
             isLoading,
             error
         }}>

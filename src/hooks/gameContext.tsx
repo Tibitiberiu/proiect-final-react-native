@@ -44,12 +44,11 @@ export enum GameStatus {
     FINISHED = "FINISHED"
 }
 
-interface Game {
+export interface Game {
     status: GameStatus;
     moves: GameMove[];
     playerToMoveId: string;
 }
-
 interface GameList {
     total: number;
     games: Game[];
