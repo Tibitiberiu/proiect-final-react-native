@@ -3,7 +3,6 @@ import ProfileScreen from '../screens/profile/Profile.screen';
 import {  HomepageRouteNames } from './route-names';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import TableScreen from '../screens/game/Table.screen';
 
 const HomepageTab = createBottomTabNavigator();
 

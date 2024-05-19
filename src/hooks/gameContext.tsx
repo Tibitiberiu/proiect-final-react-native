@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useAuth } from "./authContext";
-import { getGameInfo, joinGame, sendGameConfiguration, sendMove } from "../api";
-import { Alert, Modal, Pressable, View } from "react-native";
+import { getGameInfo, sendGameConfiguration, sendMove } from "../api";
 
 export type TableRows = 1 | 2| 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 export type TableColumns = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J';

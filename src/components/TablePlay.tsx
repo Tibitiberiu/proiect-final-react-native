@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, View, Text} from 'react-native';
+import { SafeAreaView, Text} from 'react-native';
 import { AlertContainerError, AlertContainerSuccess, AlertTextError, AlertTextSuccess, Button, ButtonContainer, ButtonText, Cell, Container, Row, TableContainer, TextContainer, TextTitle } from './Components';
 import { useAuth } from '../hooks/authContext';
 import { GameStatus, useGameContext } from '../hooks/gameContext';

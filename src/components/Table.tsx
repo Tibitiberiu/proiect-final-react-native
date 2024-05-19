@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, SafeAreaView, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { SafeAreaView, Text, View, ActivityIndicator } from 'react-native';
 import { Button, ButtonContainer, ButtonText, Cell, Container, Row, SelectorContainer, TableContainer, TextContainer, TextTitle } from './Components';
 import { useAuth } from '../hooks/authContext';
-import { ICell, ShipDirection, ShipSize, TableColumns, TableRows, useGameContext, Ship, GameStatus } from '../hooks/gameContext';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { ICell, ShipDirection, ShipSize, useGameContext, Ship, GameStatus } from '../hooks/gameContext';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
-import { AuthRouteNames, GameRouteNames } from '../router/route-names';
+import { GameRouteNames } from '../router/route-names';
 
 interface ITable {
     state: ICell[][];
@@ -21,16 +20,13 @@ const Table: React.FC<ITable> = ({state}) => {
     const [shipList, setShipList] = useState<Ship[] | null>(null);
     const navigation = useNavigation<any>();
     const addShip = (newShip: Ship) => {
-        //console.log(shipList)
         if (shipList) {
           setShipList([...shipList, newShip]);
         } else {
           setShipList([newShip]);
         }
     };
-    // useEffect(() => {
-    //     console.log(menuItems);
-    // }, [menuItems]);
+
     useEffect(() => {
         //console.log(shipList);
         if(menuItems.toString() === [1, 2, 3, 4].toString() && shipList != null){
@@ -44,7 +40,7 @@ const Table: React.FC<ITable> = ({state}) => {
         navigation.navigate(GameRouteNames.TABLEPLAY);
     }
     useEffect(() => {
-        if (gameCtx.game?.status === GameStatus.ACTIVE) { // DE MODIFICAT CU ACTIVE
+        if (gameCtx.game?.status === GameStatus.ACTIVE) {
             handleGoToTablePlay();
         }
     }, [gameCtx.game?.status, navigation]);

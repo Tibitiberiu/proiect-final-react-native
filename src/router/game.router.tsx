@@ -2,7 +2,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GameRouteNames } from "./route-names";
 import TableScreen from "../screens/game/Table.screen";
 import TablePlayScreen from "../screens/game/TablePlay.screen";
-import TableReloadScreen from "../screens/game/TableReload.screen";
 
 const GameStack = createNativeStackNavigator()
 

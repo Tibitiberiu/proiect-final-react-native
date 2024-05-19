@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, View, Text} from 'react-native';
-import { AlertContainerError, AlertContainerSuccess, AlertTextError, AlertTextSuccess, Button, ButtonContainer, ButtonText, Cell, Container, Row, Separator, TableContainer, TextBorder, TextContainer, TextTitle } from './Components';
+import { SafeAreaView, Text} from 'react-native';
+import { Button, ButtonContainer, ButtonText, Cell, Container, Row, Separator, TableContainer, TextBorder, TextContainer, TextTitle } from './Components';
 import { useAuth } from '../hooks/authContext';
-import { GameStatus, useGameContext } from '../hooks/gameContext';
-import { useRoute } from '@react-navigation/native';
-import { getGameInfo } from '../api';
+import { useGameContext } from '../hooks/gameContext';
 
 
 const TablePlay: React.FC = () => {

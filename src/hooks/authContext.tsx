@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { getUserInfo, joinGame, login, register } from "../api";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthRouteNames } from "../router/route-names";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "@react-navigation/native";
 
 interface IUserDetails {
     user: {id: string, email: string};

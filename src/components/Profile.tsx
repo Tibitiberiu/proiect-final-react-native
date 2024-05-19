@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView, Text } from "react-native";
 import { useAuth } from "../hooks/authContext";
 import { Button, ButtonContainerProfile, ButtonText, Container, Separator, TextContainer, TextTitle, TextTitleCentered, Title } from "./Components";

@@ -1,12 +1,9 @@
 import React, {useEffect, useState} from "react";
-import styled from "styled-components/native";
-import { ActivityIndicator, SafeAreaView, Text } from "react-native";
+import { ActivityIndicator, SafeAreaView } from "react-native";
 import { Button, ButtonContainer, ButtonText, Container, GameList, Separator, TextTitle, Title } from "./Components";
 import { useAuth } from "../hooks/authContext";
-import { createGame, getGameInfo, listGames } from "../api";
+import { createGame, listGames } from "../api";
 import GameListItem from "./GameListItem";
-import { useNavigation } from "@react-navigation/native";
-import { AuthRouteNames, GameRouteNames, HomepageRouteNames } from "../router/route-names";
 import { GameStatus } from "../hooks/gameContext";
 
 
@@ -42,9 +39,6 @@ const Homepage: React.FC = () => {
         });
     }
     
-    const handleTablePreview = () => {
-        auth.setIsInGame("");
-    }
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>

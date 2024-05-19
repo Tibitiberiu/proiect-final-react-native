@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components/native";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
 import { TextContainer, TextTitle } from "./Components";
 import { GameStatus } from "../hooks/gameContext";
 
