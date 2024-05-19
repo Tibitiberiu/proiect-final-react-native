@@ -156,10 +156,10 @@ const baseReloadTableState2: StrikeCell[][] = [
 
 
 export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
-    const [tableState, setTableState] = useState<ICell[][]>(baseTableState); // Am modificat eu aici
-    const [strikeTableState, setStrikeTableState] = useState<StrikeCell[][]>(baseStrikeTableState); // Am modificat eu aici
-    const [reloadTableState1, setReloadTableState1] = useState<StrikeCell[][]>(baseReloadTableState1); // Am modificat eu aici
-    const [reloadTableState2, setReloadTableState2] = useState<StrikeCell[][]>(baseReloadTableState2); // Am modificat eu aici
+    const [tableState, setTableState] = useState<ICell[][]>(baseTableState); 
+    const [strikeTableState, setStrikeTableState] = useState<StrikeCell[][]>(baseStrikeTableState); 
+    const [reloadTableState1, setReloadTableState1] = useState<StrikeCell[][]>(baseReloadTableState1); 
+    const [reloadTableState2, setReloadTableState2] = useState<StrikeCell[][]>(baseReloadTableState2);
     const auth = useAuth();
     const [game, setGame] = useState<Game | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
@@ -247,7 +247,7 @@ export const GameContextProvider: React.FC<{children: React.ReactNode}> = ({chil
             line.forEach(cell => {
                 if(cells.some(obj => obj.row === cell.row && obj.column === cell.column)){
                     if(cell.value === false)
-                        cell.value = true; // Poti sa intersectezi vertical cu orizontal si nu e bine
+                        cell.value = true;
                     else throw new Error('Collision');
                 }
             })

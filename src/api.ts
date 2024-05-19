@@ -123,15 +123,15 @@ export const getGameInfo = async (token: string, gameId: string): Promise<Game> 
 
 export const sendGameConfiguration = async (token: string, gameId: string, ships: Ship[]) => {
     const body = {
-        ships: ships // sau ajustați structura conform așteptărilor API-ului
+        ships: ships
     };
 
     const result = await fetch(`${baseUrl}/game/${gameId}`, {
-        method: 'PATCH', // 'PATCH' trebuie să fie cu litere mari
+        method: 'PATCH',
         headers: {
             ...baseHeaders,
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json' // asigurați-vă că specificați tipul de conținut
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(body)
     });
