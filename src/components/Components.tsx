@@ -101,6 +101,17 @@ export const Separator = styled.View`
 export const TextTitle = styled.Text`
     font-weight: bold;
 `
+
+export const TextBorder = styled.Text`
+    width: 20px;
+    height: 20px;
+    font-weight: bold;
+    text-align: center;
+    align-items: center;
+    border: 1px solid;
+    border-radius: 10px;
+`
+
 export const TextTitleCentered = styled.Text`
     width: 100%;
     text-align: center;
