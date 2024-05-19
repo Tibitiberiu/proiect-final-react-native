@@ -3,7 +3,7 @@ import styled from "styled-components/native";
 import { ActivityIndicator, SafeAreaView, Text } from "react-native";
 import { Button, ButtonContainer, ButtonText, Container, GameList, Separator, TextTitle, Title } from "./Components";
 import { useAuth } from "../hooks/authContext";
-import { createGame, listGames } from "../api";
+import { createGame, getGameInfo, listGames } from "../api";
 import GameListItem from "./GameListItem";
 import { useNavigation } from "@react-navigation/native";
 import { AuthRouteNames, GameRouteNames, HomepageRouteNames } from "../router/route-names";

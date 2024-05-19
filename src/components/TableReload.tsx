@@ -28,7 +28,7 @@ const TablePlay: React.FC = () => {
                 </TextContainer>
                 <TextContainer style={{justifyContent: 'center'}}>
                     <TextTitle>Winner ID:</TextTitle>
-                    <Text>{gameCtx.game?.playerToMoveId}</Text>
+                    <Text>{gameCtx.game?.moves[gameCtx.game?.moves.length - 1].playerId}</Text>
                 </TextContainer>
                 <Separator />
                 <TextContainer style={{justifyContent: 'center'}}>

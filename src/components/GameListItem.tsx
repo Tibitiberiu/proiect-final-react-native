@@ -12,7 +12,7 @@ const Container = styled.TouchableOpacity`
 `
 
 export interface IGameListItem {
-    id: number;
+    id: string;
     onPress?: () => void;
     status: string;
     winner: string;
