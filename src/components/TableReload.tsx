@@ -82,7 +82,7 @@ const TablePlay: React.FC = () => {
                 <TextContainer style={{justifyContent: 'center'}}>
                     <TextTitle>Number of moves shown:</TextTitle>
                     <Text style={{paddingRight: 5}}> {NMoves}</Text>
-                    <TextBorder onPress={() => setNMoves(NMoves + 1)}> + </TextBorder>
+                    {gameCtx.game && NMoves < gameCtx.game?.moves.length ? <TextBorder onPress={() => setNMoves(NMoves + 1)}> + </TextBorder> : null}
                 </TextContainer>
             <ButtonContainer style={{paddingTop: 0}}>
                 <Button onPress={handleBack}>
